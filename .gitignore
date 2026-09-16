@@ -1,0 +1,16 @@
+# Artefak lokal / backup - tidak di-publish
+*.py
+!qgis_import_csv_tool.py
+
+# File konfigurasi logging lokal (berisi URL web app pribadi)
+.qgis_log_config.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
