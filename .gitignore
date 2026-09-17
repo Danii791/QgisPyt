@@ -5,6 +5,9 @@
 # File konfigurasi logging lokal (berisi URL web app pribadi)
 .qgis_log_config.txt
 
+# Dokumentasi lokal (detail internal), tidak di-publish
+READMELOCAL.md
+
 # Python
 __pycache__/
 *.pyc

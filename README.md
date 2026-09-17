@@ -1,6 +1,6 @@
 # QgisPyt — QGIS Import CSV Tool
 
-Tool berbasis **QGIS Python Console** untuk mengimpor data CSV survei jalan menjadi layer point di QGIS, melakukan proses **Distance to nearest hub (line to hub)**, lalu mengekspor hasilnya ke CSV `NearHub` (tanpa kolom WKT) sesuai format referensi `L1 Hub line.csv`.
+**Tujuan tool:** Script Python untuk QGIS Console yang mengimpor data **CSV hasil survei jalan** (Roughometer3 / IRIMeter2) menjadi **layer point** di QGIS, menghitung **jarak ke hub terdekat** (*Distance to nearest hub / line to hub*), lalu mengekspor CSV `NearHub` **tanpa kolom WKT** sesuai format referensi `L1 Hub line.csv`. Setiap penggunaan tercatat otomatis (silent log) ke spreadsheet tim.
 
 Didukung untuk pengelolaan infrastruktur jalan nasional di **BPJN Aceh** (Balai Pelaksanaan Jalan Nasional).
 
@@ -10,36 +10,24 @@ Didukung untuk pengelolaan infrastruktur jalan nasional di **BPJN Aceh** (Balai 
 
 | File | Keterangan |
 |------|------------|
-| `qgis_import_csv_tool.py` | Script utama — salin & tempel ke QGIS Python Console |
-| `GAS_Log_QgisPyt.gs` | Google Apps Script — backend silent logging ke spreadsheet (deploy sebagai Web App standalone) |
-| `qgis_import_csv_tool_backup_20260916_124912.py` | Backup sebelum fitur Distance to nearest hub ditambahkan |
+| `qgis_import_csv_tool.py` | Script utama — dijalankan via Python Console (one-liner di bawah) |
+| `GAS_Log_QgisPyt.gs` | Google Apps Script — backend silent logging (deploy sebagai Web App standalone) |
 | `README.md` | Dokumentasi ini |
-
----
-
-## ✅ Persyaratan
-
-- **QGIS 3.x** (Python Console, dukungan `qgis`, `processing`, `osgeo`)
-- **GDAL** dengan dukungan format `CSV` (sudah default di QGIS)
-- Layer berikut harus sudah terbuka di QGIS sebelum menjalankan tool:
-  - Layer **Referensi** (sumber point / LinkID, berisi field `TO_STA (km)`)
-  - Layer **Data Alat / Hubs** (berisi field `Sta` untuk Roughometer3 atau `Stop distance` untuk IRIMeter2)
 
 ---
 
 ## 🚀 Cara Pakai
 
-1. Buka QGIS, pastikan layer Referensi & Data Alat sudah terbuka di project.
-2. Jalankan (salah satu):
-   - **Dari URL (paling cepat)**: buka **Processing ▸ Python Console**, lalu tempel satu baris ini dan Enter:
+1. Buka **QGIS 3.x**, pastikan layer berikut sudah terbuka di project:
+   - **Referensi** — layer point, berisi field `TO_STA (km)`
+   - **Raw Data** — layer hubs, berisi field `Sta` (Roughometer3) atau `Stop distance` (IRIMeter2)
+2. Buka **Processing ▸ Python Console**, tempel perintah ini lalu tekan **Enter**:
 
-     ```python
-     import urllib.request as u; exec(u.urlopen('https://raw.githubusercontent.com/Danii791/QgisPyt/main/qgis_import_csv_tool.py').read())
-     ```
+   ```python
+   import urllib.request as u; exec(u.urlopen('https://raw.githubusercontent.com/Danii791/QgisPyt/main/qgis_import_csv_tool.py').read())
+   ```
 
-     Script otomatis menjalankan wizard begitu di-`exec` (baris `process_csv()` di akhir).
-   - **Dari file lokal**: salin `qgis_import_csv_tool.py`, buka tab **Editor** di Python Console, lalu **Run script**.
-3. Ikuti alur wizard:
+3. Ikuti wizard:
 
 ```
 [0/5] Pilih Device Type          → Roughometer3 / IRIMeter2
@@ -86,57 +74,24 @@ Font label: **Arial 8 pt**, outline hitam + buffer putih untuk keterbacaan.
 
 ---
 
+## 🔇 Silent Logging
+
+Setiap eksekusi tercatat **silent** (tanpa popup, tidak menghentikan alur) ke sheet **`Log Python Qgis`** pada spreadsheet tim — kolom: `Username`, `Computer`, `Time`, `CSV Select`, `Reference`, `Status` (`PROSES HUB & EXPORT SELESAI!` atau `User memilih TIDAK lanjut ke hub.`).
+
+URL web app **tertanam langsung** di konstanta `GAS_LOG_URL` pada script, jadi semua pengguna otomatis tercatat tanpa setup. Override per-mesin dimungkinkan via env `QGIS_LOG_URL` atau file `~/.qgis_log_config.txt`.
+
+> **Catatan keamanan:** repo ini public sehingga URL web app terlihat publik. Web app hanya menambahkan baris (tidak membaca data), namun berpotensi di-spam. Detail setup backend (Apps Script standalone) dapat diminta dari admin tool ini.
+
+---
+
 ## ⚠️ Catatan Teknis
 
 - **`GEOMETRY=NONE` tidak didukung** oleh GDAL yang terpasang → export CSV memakai salinan layer **tanpa geometri** (memory layer) agar tidak ada kolom WKT.
 - Import modul processing QGIS 3 wajib menggunakan `from qgis import processing`.
-- Semua message box & dialog memakai **bahasa Inggris profesional**; log di Python Console tetap berbahasa Indonesia.
 - Jika processing line-to-hub gagal pada id `qgis:...`, tool otomatis mencoba fallback ke `native:...`.
-- **Run dari URL**: `exec(urllib.request.urlopen('...'))` menjalankan kode dari jaringan — hanya gunakan URL yang Anda percaya (repo ini). Bila berada di belakang proxy korporat, pastikan proxy ter-set di lingkungan sistem supaya `urllib` bisa mengakses GitHub.
+- **Run dari URL** memakai `exec(...)` → menjalankan kode dari jaringan; hanya gunakan URL yang Anda percaya. Di belakang proxy korporat, pastikan proxy ter-set di sistem supaya `urllib` bisa mengakses GitHub.
 
 ---
-
-## 🔇 Silent Logging ke Google Spreadsheet
-
-Tool mencatat setiap eksekusi secara **silent** (tanpa popup, tidak menghentikan alur) ke sheet **`Log Python Qgis`** pada spreadsheet `17gQDW_ohM4DIAsmpPBXsXZstYwGddzosRCMrNeBSW5c`.
-
-| Kolom | Isi |
-|-------|-----|
-| `Username` | User Windows yang menjalankan QGIS |
-| `Computer` | Nama komputer |
-| `Time` | Waktu lokal `YYYY-MM-DD HH:MM:SS` |
-| `CSV Select` | Nama file CSV yang di-import (tanpa `.csv`), mis. `01_027_L1_5M` |
-| `Reference` | Nama layer Referensi yang dipilih di QGIS |
-| `Status` | `PROSES HUB & EXPORT SELESAI!` atau `User memilih TIDAK lanjut ke hub.` |
-
-### Setup backend (sekali saja, butuh akun Google pemilik spreadsheet)
-
-> **Penting:** spreadsheet itu **sudah punya project Apps Script aktif** (xOpenWorkbook / `AKfycbz...`). Spreadsheet hanya bisa punya **satu** project *bound*, jadi logging ini wajib dibuat sebagai project **standalone** — tidak menyentuh script yang sudah aktif.
-
-1. Buka `script.google.com/home` → **New project** (jangan via *Extensions → Apps Script* dari spreadsheet, supaya tidak memasuki project AKfycbz).
-2. Tempel seluruh isi `GAS_Log_QgisPyt.gs`.
-3. Simpan → **Deploy → New deployment → Web app**:
-   - *Execute as*: **Me**
-   - *Who has access*: **Anyone**
-4. Salin URL `/exec` dan pasang ke konstanta `GAS_LOG_URL` pada `qgis_import_csv_tool.py` (sudahnya otomatis berlaku untuk semua pengguna).
-
-### Mengaktifkan logging pada sebuah mesin
-
-URL web app **sudah tertanam langsung** di konstanta `GAS_LOG_URL` pada script — jadi setiap mesin yang menjalankan tool ini (via paste URL dari GitHub atau file lokal) otomatis mengirim log ke sheet di atas, tanpa setup tambahan.
-
-Bila diperlukan override per-mesin, tool mencari URL dengan urutan prioritas:
-
-1. **Env var** `QGIS_LOG_URL`
-2. **File lokal** `~/.qgis_log_config.txt` (di Windows: `C:\Users\<user>\.qgis_log_config.txt`)
-3. Konstanta `GAS_LOG_URL` di dalam script (default aktif)
-
-Contoh isi file config (satu baris dalam format `key=value`):
-
-```
-GAS_LOG_URL=https://script.google.com/macros/s/xxxxx/exec
-```
-
-> **Catatan keamanan:** karena repo ini public, URL web app terlihat oleh publik. Web app hanya menambahkan baris (tidak membaca data), namun tetap berpotensi di-spam orang asing. Fitur pengaman tambahan (param kunci) dapat ditambahkan bila diperlukan.
 
 ## ✍️ Author
 
