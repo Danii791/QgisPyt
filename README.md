@@ -1,8 +1,6 @@
 # QgisPyt — QGIS Import CSV Tool
 
-**Tujuan tool:** Script Python untuk QGIS Console yang mengimpor data **CSV hasil survei jalan** (Roughometer3 / IRIMeter2) menjadi **layer point** di QGIS, menghitung **jarak ke hub terdekat** (*Distance to nearest hub / line to hub*), lalu mengekspor CSV `NearHub` **tanpa kolom WKT** sesuai format referensi `L1 Hub line.csv`. Setiap penggunaan tercatat otomatis (silent log) ke spreadsheet tim.
-
-Didukung untuk pengelolaan infrastruktur jalan nasional di **BPJN Aceh** (Balai Pelaksanaan Jalan Nasional).
+**Tujuan tool:** Script Python untuk QGIS Console yang mengimpor data **CSV hasil survei jalan** (Roughometer3 / IRIMeter2) menjadi **layer point** di QGIS, menghitung **jarak ke hub terdekat** (*Distance to nearest hub / line to hub*), lalu mengekspor CSV `NearHub` **tanpa kolom WKT** sesuai format referensi `L1 Hub line.csv`.
 
 ---
 
@@ -11,7 +9,6 @@ Didukung untuk pengelolaan infrastruktur jalan nasional di **BPJN Aceh** (Balai 
 | File | Keterangan |
 |------|------------|
 | `qgis_import_csv_tool.py` | Script utama — dijalankan via Python Console (one-liner di bawah) |
-| `GAS_Log_QgisPyt.gs` | Google Apps Script — backend silent logging (deploy sebagai Web App standalone) |
 | `README.md` | Dokumentasi ini |
 
 ---
@@ -64,26 +61,6 @@ Font label: **Arial 8 pt**, outline hitam + buffer putih untuk keterbacaan.
 
 ---
 
-## 🎨 Styling Layer Referensi (setelah export)
-
-| Aspek | Nilai |
-|-------|-------|
-| Simbol | Circle `#ff8800`, size 2 |
-| Label | Field `TO_STA (km)`, font Arial 10 pt, hitam, buffer putih |
-| Jika field `TO_STA (km)` tidak ditemukan | Warning + daftar field; warna tetap, label dilewati |
-
----
-
-## 🔇 Silent Logging
-
-Setiap eksekusi tercatat **silent** (tanpa popup, tidak menghentikan alur) ke sheet **`Log Python Qgis`** pada spreadsheet tim — kolom: `Username`, `Computer`, `Time`, `CSV Select`, `Reference`, `Status` (`PROSES HUB & EXPORT SELESAI!` atau `User memilih TIDAK lanjut ke hub.`).
-
-URL web app **tertanam langsung** di konstanta `GAS_LOG_URL` pada script, jadi semua pengguna otomatis tercatat tanpa setup. Override per-mesin dimungkinkan via env `QGIS_LOG_URL` atau file `~/.qgis_log_config.txt`.
-
-> **Catatan keamanan:** repo ini public sehingga URL web app terlihat publik. Web app hanya menambahkan baris (tidak membaca data), namun berpotensi di-spam. Detail setup backend (Apps Script standalone) dapat diminta dari admin tool ini.
-
----
-
 ## ⚠️ Catatan Teknis
 
 - **`GEOMETRY=NONE` tidak didukung** oleh GDAL yang terpasang → export CSV memakai salinan layer **tanpa geometri** (memory layer) agar tidak ada kolom WKT.
@@ -91,11 +68,3 @@ URL web app **tertanam langsung** di konstanta `GAS_LOG_URL` pada script, jadi s
 - Jika processing line-to-hub gagal pada id `qgis:...`, tool otomatis mencoba fallback ke `native:...`.
 - **Run dari URL** memakai `exec(...)` → menjalankan kode dari jaringan; hanya gunakan URL yang Anda percaya. Di belakang proxy korporat, pastikan proxy ter-set di sistem supaya `urllib` bisa mengakses GitHub.
 
----
-
-## ✍️ Author
-
-**Chepie Rosdian Rhamdani**
-- Consultant ID: 23
-- Team Lead ID: 563
-- Surv Tool ID: 6558

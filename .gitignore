@@ -8,6 +8,10 @@
 # Dokumentasi lokal (detail internal), tidak di-publish
 READMELOCAL.md
 
+# Lokal saja - tidak di-push ulang
+AGENTS.md
+GAS_Log_QgisPyt.gs
+
 # Python
 __pycache__/
 *.pyc
