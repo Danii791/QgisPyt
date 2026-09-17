@@ -6,6 +6,7 @@
 .qgis_log_config.txt
 
 # Dokumentasi lokal (detail internal), tidak di-publish
+ReadmeLocal.md
 READMELOCAL.md
 
 # Lokal saja - tidak di-push ulang
