@@ -43,15 +43,14 @@ from qgis import processing
 #   - Sheet tujuan: 'Log Python Qgis' pada spreadsheet id:
 #     17gQDW_ohM4DIAsmpPBXsXZstYwGddzosRCMrNeBSW5c
 #
-#   URL web app TIDAK ditanam di script (repo publik).
+#   URL web app tertanam di konstanta GAS_LOG_URL di bawah (default aktif).
 #   Prioritas pemuatan URL via _load_gas_log_url():
 #     1. Env var   : QGIS_LOG_URL
 #     2. File lokal: ~/.qgis_log_config.txt
 #                    (baris: GAS_LOG_URL=https://script.google.com/macros/s/XXXX/exec)
-#     3. Konstanta : GAS_LOG_URL di bawah (default kosong)
-#   Bila URL tidak ditemukan, logging dilewati diam-diam.
+#     3. Konstanta : GAS_LOG_URL di bawah (default aktif)
 # ============================================================
-GAS_LOG_URL = ""
+GAS_LOG_URL = "https://script.google.com/macros/s/AKfycbxx3m4PQY_fzfo5Dzfy-HA635o8ym6LaNknzi9V-3okL9hhHEqrRI36C8hl2H4t6wsF/exec"
 GAS_LOG_CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.qgis_log_config.txt')
 
 

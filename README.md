@@ -118,15 +118,17 @@ Tool mencatat setiap eksekusi secara **silent** (tanpa popup, tidak menghentikan
 3. Simpan → **Deploy → New deployment → Web app**:
    - *Execute as*: **Me**
    - *Who has access*: **Anyone**
-4. Salin URL `/exec` dan pasang di mesin yang boleh mengirim log (lihat di bawah).
+4. Salin URL `/exec` dan pasang ke konstanta `GAS_LOG_URL` pada `qgis_import_csv_tool.py` (sudahnya otomatis berlaku untuk semua pengguna).
 
 ### Mengaktifkan logging pada sebuah mesin
 
-URL web app **tidak ditanam di script** (repo ini public, supaya URL tidak disalahgunakan untuk men-spam sheet). Tool mencari URL dengan urutan prioritas:
+URL web app **sudah tertanam langsung** di konstanta `GAS_LOG_URL` pada script — jadi setiap mesin yang menjalankan tool ini (via paste URL dari GitHub atau file lokal) otomatis mengirim log ke sheet di atas, tanpa setup tambahan.
+
+Bila diperlukan override per-mesin, tool mencari URL dengan urutan prioritas:
 
 1. **Env var** `QGIS_LOG_URL`
 2. **File lokal** `~/.qgis_log_config.txt` (di Windows: `C:\Users\<user>\.qgis_log_config.txt`)
-3. Konstanta `GAS_LOG_URL` di dalam script (default kosong)
+3. Konstanta `GAS_LOG_URL` di dalam script (default aktif)
 
 Contoh isi file config (satu baris dalam format `key=value`):
 
@@ -134,7 +136,7 @@ Contoh isi file config (satu baris dalam format `key=value`):
 GAS_LOG_URL=https://script.google.com/macros/s/xxxxx/exec
 ```
 
-Mesin **tanpa** config/env → tool tetap berjalan normal, logging dilewati diam-diam (catatan `[LOG]` di Python Console).
+> **Catatan keamanan:** karena repo ini public, URL web app terlihat oleh publik. Web app hanya menambahkan baris (tidak membaca data), namun tetap berpotensi di-spam orang asing. Fitur pengaman tambahan (param kunci) dapat ditambahkan bila diperlukan.
 
 ## ✍️ Author
 
